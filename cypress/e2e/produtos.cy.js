@@ -4,13 +4,13 @@ import contrato from '../contracts/produtos.contract'
 describe('Testes da Funcionalidade Produtos', () => {
     let token
     before(() => {
-        cy.token('fulano@qa.com', 'teste').then(tkn => { token = tkn })
+        cy.token('ebac.gus@teste.com.br', 'teste').then(tkn => { token = tkn })
     });
 
     it('Deve validar contrato de produtos', () => {
-        cy.request('produtos').then(response => {
+        cy.request('usuario').then(response => {
             return contrato.validateAsync(response.body)
-        })
+        }) 
     });
 
     it('Deve listar os produtos cadastrados', () => {
@@ -18,7 +18,7 @@ describe('Testes da Funcionalidade Produtos', () => {
             method: 'GET',
             url: 'produtos'
         }).then((response) => {
-            //expect(response.body.produtos[9].nome).to.equal('Produto EBAC 436746')
+            //expect(response.body.produtos[9].nome).to.equal('Produto EBAC 45642083')
             expect(response.status).to.equal(200)
             expect(response.body).to.have.property('produtos')
             expect(response.duration).to.be.lessThan(20)
@@ -44,7 +44,7 @@ describe('Testes da Funcionalidade Produtos', () => {
     });
 
     it('Deve validar mensagem de erro ao cadastrar produto repetido', () => {
-        cy.cadastrarProduto(token, 'Produto EBAC Novo 1', 250, "Descrição do produto novo", 180)
+        cy.cadastrarProduto(token, 'Produto EBAC Novo 2', 250, "Descrição do produto novo", 180)
             .then((response) => {
                 expect(response.status).to.equal(400)
                 expect(response.body.message).to.equal('Já existe produto com esse nome')
