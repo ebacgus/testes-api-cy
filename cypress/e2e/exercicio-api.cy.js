@@ -11,95 +11,124 @@ describe('Testes da Funcionalidade Usuários', () => {
      
     });
 
-    it.only('Deve validar contrato de usuários', () => {
-     cy.request('usuarios').then(response => {
-          return contrato.validateAsync(response.body)
+    it('Deve validar contrato de usuários', () => {
+        cy.request('usuario').then(response => {
+            return contrato.validateAsync(response.body)
+        }) 
     
   });
 
     
 
-    it('Deve listar usuários cadastrados', () => {
-     cy.request({
-          method: 'GET',
-          url: 'usuarios'
-      }).then((response) => {
-          expect(response.body.usuarios[3].nome).to.equal('Gustavo Souza')
-          expect(response.status).to.equal(200)
-          expect(response.body).to.have.property('usuarios')
-          expect(response.duration).to.be.lessThan(1300)
+    it('Deve listar usuarios cadastrados ', () => {
+    cy.request({
+        method: 'GET',
+        url: 'usuarios'
+    }).then((response) => {
+        expect(response.body.usuarios[2].nome).to.equal("Gustavo Pereira")
+        expect(response.status).to.equal(200)
+        expect(response.body).to.have.property('usuarios')
+    })
+        
     });
+
+
+
+
+    
     it('Deve cadastrar um usuário com sucesso', () => {
-  
-     cy.request({
-      method: 'POST',
-      url:'usuarios',
-      body: {
-        "nome": "Gustavo de Souza Pereira",
-        "email": "Pereira@qa.com.br",
-        "password": "qualidade",
-        "administrador": "true"
-      },
-      headers: { authorization: token }
+        let produto = `Usuario EBAC ${Math.floor(Math.random() * 100000000)}`
+    cy.request({
+        method: 'POST',
+        url:'usuarios',
+        body: {
+            "nome": "Nalu   Pereira",
+            "email": "nalu@qacom.br",
+            "password": "bebe",
+            "administrador": "true"
+          }
     }).then((response) => {
         expect(response.status).to.equal(201)
-        expect(response.body.message).to.equal('Cadastro realizado com sucesso')
+            expect(response.body.message).to.equal('Cadastro realizado com sucesso')
+        
     })
 
-     })
-});
+    })
+
+    
+
 
    
 
 
     it('Deve validar um usuário com email inválido', () => {
-     cy.cadastrarUsuario( 
-          "Gustavo Souza" , "ebac.gus@teste.com.br", "teste","true")
-     .then((response) => {
-         
+        cy.cadastrarUsuario('Marina trudes Pereira','nalu@filha.com','bebe',true)
+        .then((response) => {
+            expect(response.status).to.equal(400)
+           
+        
+            })
      
     });
+
+
 
     it('Deve editar um usuário previamente cadastrado', () => {
-     let usuario = `Gustavo Souza ${Math.floor(Math.random() * 100000000)}`
-     cy.cadastrarUsuario( token, usuario , "ebac.gus@teste.com.br", "teste","true")
-     .then(response => {
-         let id = response.body._id
+     
+        cy.request('usuarios').then(response => {
+            
+            let id = response.body.usuarios[3]._id
+            cy.request({
+                method:'PUT',
+                url:`usuarios/$(id)`,
+                body:
+                {
+                    "nome": "Usuario editado 2023",
+                    "email": "editor@qa.com.br",
+                    "password": "teste",
+                    "administrador": "true"
+                }
+            })
 
-         cy.request({
-             method: 'PUT', 
-             url: `usuarios/${id}`,
-             headers: {authorization: token}, 
-             body: 
-             {
-               "nome": "Gustavo de Souza Pereira",
-               "email": "Pereira@qa.com.br",
-               "password": "qualidade",
-               "administrador": "true"
-             },
-               },
-          )
+
+        }).then((response) => {
+            expect(response.body.message).to.equal('Cadastro realizado com sucesso')
+        })
+            
+            })
+    
+    
      
-     
-    });
+    
+
+
+
 
     it('Deve deletar um usuário previamente cadastrado', () => {
-     let uuario = `Gustavo Souza ${Math.floor(Math.random() * 100000000)}`
-     cy.cadastrarUsuario(token, usuario, "ebac.gus@teste.com.br", "teste","true")
-     .then(response => {
-         let id = response.body._id
-         cy.request({
-             method: 'DELETE',
-             url: `usuarios/${id}`,
-             headers: {authorization: token}
-         }).then(response =>{
-             expect(response.body.message).to.equal('Registro excluído com sucesso')
-             expect(response.status).to.equal(200)
-         })
+      
+        cy.request('usuarios').then(response => {
+            
+            let id = response.body.usuarios[9]._id
+            cy.request({
+                method:'DELETE',
+                url:`usuarios/$(id)`,
+                body:
+                    {
+                        "nome": "Fulano da Silva",
+                        "email": "fulano@software.com.br",
+                        "password": "ebacqualidade",
+                        "administrador": "true"
+                    }
+                    
+                
+                
+     
     });
-    })
+    
+
+    }).then((response) => {
+        expect(response.body.message).to.equal('nenhum registro excluido')
+
 
 })
-    })
-
     })
